@@ -1,0 +1,35 @@
+name: Ubuntu
+# Qt官方没有linux平台的x86包
+on: 
+  # 触发workflow
+  [push, pull_request, create]
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        qt_ver: [6.2.4]
+        qt_arch: [gcc_64]
+    steps:
+      # 安装Qt https://github.com/jurplel/install-qt-action
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ matrix.qt_ver }}
+          cache: 'false'
+      - name: ubuntu install ffmpeg5
+        run: sudo add-apt-repository ppa:savoury1/ffmpeg5 -y 
+      - name: ubuntu install ffmpeg4
+        run: sudo add-apt-repository ppa:savoury1/ffmpeg4 -y 
+      - name: ubuntu install library
+        run: sudo apt-get install -y libsdl2-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libavfilter-dev libavdevice-dev
+
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: build ubuntu
+        run: |
+          qmake
+          make

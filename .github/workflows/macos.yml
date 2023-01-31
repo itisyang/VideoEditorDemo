@@ -1,0 +1,59 @@
+name: MacOS
+on: 
+  # 触发workflow
+  [push, pull_request, create]
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-10.15]
+        qt_ver: [6.2.4]
+        qt_arch: [clang_64]
+    env:
+      targetName: playerdemo
+    steps:
+      # 安装ffmpeg5.1.2_3:/usr/local/Cellar/ffmpeg@5.1.1/5.1.1_1 sdl2: /usr/local/Cellar/sdl2/2.24.1
+      - name: install lib
+        run: |
+          brew tap-new $USER/local-tap
+          brew extract --version='5.1.1' ffmpeg $USER/local-tap
+          brew install ffmpeg@5.1.1
+          brew info ffmpeg
+          brew info ffmpeg@5.1.1
+          brew info SDL2
+          pkg-config --libs libavcodec
+      # 安装Qt https://github.com/jurplel/install-qt-action
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ matrix.qt_ver }}
+          cache: 'false'
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: build macos
+        run: |
+          qmake
+          make
+      # 打包
+      - name: package
+        run: |
+          # 拷贝依赖
+          macdeployqt bin/${targetName}.app -qmldir=. -verbose=1 -dmg
+      # 上传artifacts          
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.targetName }}_${{ matrix.os }}_${{matrix.qt_ver}}.zip
+          path: bin/${{ env.targetName }}.app
+      # tag 上传Release
+      - name: uploadRelease
+        if: startsWith(github.event.ref, 'refs/tags/')
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: bin/${{ env.targetName }}.dmg
+          asset_name: ${{ env.targetName }}_${{ matrix.os }}_${{ matrix.qt_ver }}.dmg
+          tag: ${{ github.ref }}
+          overwrite: true
