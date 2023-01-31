@@ -23,16 +23,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="editordemo.qrc">
+    <QtRcc Include="editor_demo.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
-    <QtUic Include="editordemo.ui">
+    <QtUic Include="editor_demo.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtMoc Include="editordemo.h">
+    <QtMoc Include="editor_demo.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <ClCompile Include="editordemo.cpp">
+    <ClCompile Include="editor_demo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -40,5 +40,22 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ffmpeg_demuxer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ffmpeg_streamer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ffmpeg_demuxer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ffmpeg_streamer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
