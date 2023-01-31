@@ -105,6 +105,7 @@
   <ItemGroup>
     <ClInclude Include="ffmpeg_demuxer.h" />
     <ClInclude Include="ffmpeg_streamer.h" />
+    <ClInclude Include="logger.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

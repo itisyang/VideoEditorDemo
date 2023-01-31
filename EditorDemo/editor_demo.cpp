@@ -1,4 +1,4 @@
-#include "editordemo.h"
+#include "editor_demo.h"
 
 EditorDemo::EditorDemo(QWidget *parent)
     : QMainWindow(parent)

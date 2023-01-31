@@ -1,4 +1,4 @@
-#include "editordemo.h"
+#include "editor_demo.h"
 #include <QtWidgets/QApplication>
 
 int main(int argc, char *argv[])
