@@ -98,12 +98,12 @@
     <QtUic Include="editor_demo.ui" />
     <QtMoc Include="editor_demo.h" />
     <ClCompile Include="editor_demo.cpp" />
-    <ClCompile Include="ffmpeg_demuxer.cpp" />
+    <ClCompile Include="ffmpeg_decoder.cpp" />
     <ClCompile Include="ffmpeg_streamer.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ffmpeg_demuxer.h" />
+    <ClInclude Include="ffmpeg_decoder.h" />
     <ClInclude Include="ffmpeg_streamer.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="utils.h" />

@@ -40,17 +40,14 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ffmpeg_demuxer.cpp">
+    <ClCompile Include="ffmpeg_streamer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ffmpeg_streamer.cpp">
+    <ClCompile Include="ffmpeg_decoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ffmpeg_demuxer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ffmpeg_streamer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -58,6 +55,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ffmpeg_decoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
