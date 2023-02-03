@@ -14,14 +14,19 @@ private:
 	AVFormatContext* fmtc = NULL;
 	AVPacket* pkt = NULL;
 	int video_stream_index;
-	AVCodecID video_codec;
+	AVCodecID video_codec_id;
 	AVStream* video_stream;
+	AVCodecContext* video_avctx;
+	const AVCodec* video_codec;
 	AVPixelFormat chroma_format;
 	int width, height, bit_depth, bpp, chroma_height;
 
 	int audio_stream_index;
-	AVCodecID audio_codec;
+	AVCodecID audio_codec_id;
 	AVStream* audio_stream;
+	AVCodecContext* audio_avctx;
+	const AVCodec* audio_codec;
+
 
 	double time_base = 0.0;
 	int64_t user_time_scale = 1000;
@@ -55,16 +60,12 @@ private:
 		}
 
 		video_stream = fmtc->streams[video_stream_index];
-		video_codec = fmtc->streams[video_stream_index]->codecpar->codec_id;
-		width = fmtc->streams[video_stream_index]->codecpar->width;
-		height = fmtc->streams[video_stream_index]->codecpar->height;
-		chroma_format = (AVPixelFormat)fmtc->streams[video_stream_index]->codecpar->format;
-		AVRational r_time_base = fmtc->streams[video_stream_index]->time_base;
+		video_codec_id = video_stream->codecpar->codec_id;
+		width = video_stream->codecpar->width;
+		height = video_stream->codecpar->height;
+		chroma_format = (AVPixelFormat)video_stream->codecpar->format;
+		AVRational r_time_base = video_stream->time_base;
 		time_base = av_q2d(r_time_base);
-		if (audio_stream_index >= 0) {
-			audio_stream = fmtc->streams[audio_stream_index];
-			audio_codec = fmtc->streams[audio_stream_index]->codecpar->codec_id;
-		}
 
 		// Set bit depth, chroma height, bits per pixel based on eChromaFormat of input
 		switch (chroma_format)
@@ -111,8 +112,61 @@ private:
 			chroma_height = (height + 1) >> 1;
 			bpp = 1;
 		}
+		
+		if (0 != DecoderOpen(video_stream)) {
+			return;
+		}
 
+		if (audio_stream_index >= 0) {
+			audio_stream = fmtc->streams[audio_stream_index];
+			audio_codec_id = audio_stream->codecpar->codec_id;
 
+			if (0 != DecoderOpen(audio_stream)) {
+				return;
+			}
+		}
+	}
+
+	int DecoderOpen(AVStream* stream)
+	{
+		AVCodecContext* temp_avctx;
+		const AVCodec* temp_codec;
+
+		temp_avctx = avcodec_alloc_context3(NULL);
+		if (!temp_avctx) {
+			LOG(ERROR) << "avcodec_alloc_context3 failed" << AVERROR(ENOMEM);
+			return AVERROR(ENOMEM);
+		}
+		int ret = avcodec_parameters_to_context(temp_avctx, stream->codecpar);
+		if (ret < 0) {
+			LOG(ERROR) << "avcodec_alloc_context3 failed" << AVERROR(ret);
+			return ret;
+		}
+		temp_avctx->pkt_timebase = stream->time_base;
+
+		temp_codec = avcodec_find_decoder(temp_avctx->codec_id);
+		if ((ret = avcodec_open2(temp_avctx, temp_codec, nullptr)) < 0) {
+			LOG(ERROR) << "avcodec_open2 failed" << AVERROR(ret);
+			return ret;
+		}
+
+		switch (temp_avctx->codec_type)
+		{
+		case AVMEDIA_TYPE_VIDEO:
+			video_avctx = temp_avctx;
+			video_codec = temp_codec;
+			break;
+		case AVMEDIA_TYPE_AUDIO:
+			audio_avctx = temp_avctx;
+			audio_codec = temp_codec;
+			break;
+		case AVMEDIA_TYPE_SUBTITLE:
+			break;
+		default:
+			break;
+		}
+
+		return 0;
 	}
 
 public:
@@ -133,7 +187,7 @@ public:
 	}
 
 	AVCodecID GetVideoCodec() {
-		return video_codec;
+		return video_codec_id;
 	}
 	AVPixelFormat GetChromaFormat() {
 		return chroma_format;
